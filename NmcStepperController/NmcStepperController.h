@@ -18,38 +18,58 @@
 class Stepper
 {
 public:
+	//4 Pin Configuration
 	Stepper(unsigned int pin1, unsigned int pin2, unsigned int pin3, unsigned int pin4);
+	
 	enum modes{FullStep,DoubleStep,HalfStep};
 
 	void step(int steps);
 	void stepForward(unsigned int steps);
 	void stepBackward(unsigned int steps);
+	void setFullRotationSteps(unsigned int FullRotationSteps);
 	void setPosition(unsigned int position);
 	int getPosition();
 	int getAngle();
 	void setAngle(unsigned int angle);
 	void setSpeed(unsigned int speed);
 	void setMode(modes mode);
+	void MotorUnlock();
+	void MotorLock();
 
 private:
+	//Store Motor Pin Counts
+	byte _motorPin = 4;
+
+	//Select motor rotation direction
 	enum Direction { Forward, Backward };
-	unsigned int _pin1;
-	unsigned int _pin2;
-	unsigned int _pin3;
-	unsigned int _pin4;
+
+	//Pins of motor
+	byte _pin1;
+	byte _pin2;
+	byte _pin3;
+	byte _pin4;
+	byte _pin5;
+
+	bool _lock = false;
+	byte _currentState = 0;
+	Direction _direction;
+
 	unsigned int _fullRotationSteps = 4096;
-	unsigned int _currentPosition = 0;
+
+	long _currentPosition;
+	unsigned int _currentStep = 0;
+	unsigned int _stepLeft = 0;
+	
 	unsigned int _maxSpeed = 100;
-	unsigned int _speed = 1;
-	unsigned int _currentState = 0;
-	unsigned int _coilHoldTime = 5; //millisecond;
+	unsigned int _currentSpeed = 1;
+	
+	unsigned long _coilHoldTime = 500; //millisecond;
+
+	unsigned long _lastStateChangeTimeStamp = 0; //millisecond;
 
 	modes _currentMode = FullStep;
-	bool _lock = false;
-	void _unlock();
-	void _lock();
-	void _changeStep(Direction direction);
-	void _changeState();
+
+	void _changeStep(byte stepNumber);
 };
 
 #endif
